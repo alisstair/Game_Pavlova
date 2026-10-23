@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Кот-курьер</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="app">
+    <header class="hud">
+      <h1 class="hud__title">Кот-курьер</h1>
+      <p class="hud__stats">
+        <span class="hud__stat">Счёт <b id="score">0</b></span>
+        <span class="hud__stat" id="stampsStat">Марки <b id="stamps">0/3</b></span>
+        <span class="hud__stat" id="bossStat" hidden>Ворона <b class="hud__hearts" id="bossHearts"></b></span>
+        <span class="hud__stat"><b id="distance">0</b> м</span>
+        <span class="hud__stat">Рекорд <b data-bind="record">0</b></span>
+        <span class="hud__stat" id="shieldsStat" hidden>Каска <b id="shields">0</b></span>
+      </p>
+      <div class="hud__buttons">
+        <button class="btn btn--small btn--sound" id="soundBtn" type="button" aria-pressed="true">Звук вкл</button>
+        <button class="btn btn--small" id="pauseBtn" type="button" disabled>Пауза</button>
+        <button class="btn btn--small" id="restartBtn" type="button" disabled>Заново</button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage">
+      <canvas id="game" aria-label="Игровое поле"></canvas>
+      <p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+
+      <!-- Экраны поверх игры: виден один из data-screen, кнопки описаны через data-action -->
+      <div class="overlay" id="overlay">
+        <div class="overlay__card">
+
+          <div class="screen" data-screen="menu">
+            <h2 class="overlay__title overlay__title--big">Кот-курьер</h2>
+            <p class="overlay__text">Довези посылку до дома и не врежься по дороге.</p>
+            <p class="menu__stats">
+              <span class="menu__chip">Пройдено <b data-bind="progress">0/2</b></span>
+              <span class="menu__chip">Копилка <b data-bind="wallet">0</b> 🐟</span>
+            </p>
+            <div class="menu">
+              <button class="btn btn--wide" type="button" data-action="play">Играть</button>
+              <button class="btn btn--wide btn--ghost" type="button" data-action="shop">Гардероб</button>
+              <button class="btn btn--wide btn--ghost" type="button" data-action="help">Как играть</button>
+              <button class="btn btn--wide btn--ghost" type="button" data-action="settings">Настройки</button>
+            </div>
+          </div>
+
+          <div class="screen" data-screen="levels" hidden>
+            <h2 class="overlay__title">Выбор уровня</h2>
+            <div class="levels" id="levelList"></div>
+            <div class="menu">
+              <button class="btn btn--wide btn--ghost" type="button" data-action="back">Назад</button>
+            </div>
+          </div>
+
+          <div class="screen" data-screen="help" hidden>
+            <h2 class="overlay__title">Как играть</h2>
+            <ul class="goals">
+              <li><span class="goals__icon goals__icon--stamp"></span> Собери 3 марки — без них посылку не примут</li>
+              <li><span class="goals__icon goals__icon--fish"></span> Рыбки дают очки и копятся на покупки в гардеробе</li>
+              <li><span class="goals__icon goals__icon--danger"></span> Не врезайся в ящики и фургоны, не падай в ямы, обходи собак</li>
+              <li><span class="goals__icon goals__icon--crow"></span> На крышах: ворона бросает мусор — уходи от тени. Села на трубу — прыгни на неё. Три попадания, и посылка твоя</li>
+            </ul>
+            <ul class="hint">
+              <li><kbd>←</kbd> <kbd>→</kbd> или <kbd>A</kbd> <kbd>D</kbd> — вбок</li>
+              <li><kbd>Space</kbd> или <kbd>W</kbd> — прыжок</li>
+              <li><kbd>S</kbd> или <kbd>↓</kbd> — притормозить</li>
+              <li><kbd>P</kbd> или <kbd>Esc</kbd> — пауза, <kbd>M</kbd> — звук</li>
+              <li class="hint__touch">На телефоне — кнопки под полем</li>
+            </ul>
+            <div class="menu">
+              <button class="btn btn--wide" type="button" data-action="back">Назад</button>
+            </div>
+          </div>
+
+          <div class="screen" data-screen="settings" hidden>
+            <h2 class="overlay__title">Настройки</h2>
+            <div class="settings">
+              <div class="settings__row">
+                <span>Звук</span>
+                <button class="btn btn--small btn--sound" type="button" data-action="sound" data-bind="soundLabel" aria-pressed="true">Вкл</button>
+              </div>
+              <div class="settings__row">
+                <span>Прогресс<small class="settings__note">рекорд, копилка, покупки</small></span>
+                <button class="btn btn--small btn--danger" type="button" data-action="reset" id="resetBtn">Сбросить</button>
+              </div>
+            </div>
+            <div class="menu">
+              <button class="btn btn--wide" type="button" data-action="back">Назад</button>
+            </div>
+          </div>
+
+          <div class="screen" data-screen="pause" hidden>
+            <h2 class="overlay__title">Пауза</h2>
+            <p class="overlay__text">Кот присел отдохнуть.</p>
+            <div class="menu">
+              <button class="btn btn--wide" type="button" data-action="resume">Продолжить</button>
+              <button class="btn btn--wide btn--ghost" type="button" data-action="restart">Заново</button>
+              <button class="btn btn--wide btn--ghost" type="button" data-action="help">Как играть</button>
+              <button class="btn btn--wide btn--ghost" type="button" data-action="menu">В меню</button>
+            </div>
+          </div>
+
+          <div class="screen" data-screen="result" hidden>
+            <h2 class="overlay__title" id="resultTitle"></h2>
+            <p class="overlay__text" id="resultText"></p>
+            <p class="overlay__record" id="resultRecord" hidden></p>
+            <p class="overlay__reward" id="resultReward"></p>
+            <div class="menu">
+              <button class="btn btn--wide" type="button" data-action="next" id="nextBtn" hidden>Дальше</button>
+              <button class="btn btn--wide" type="button" data-action="restart" id="againBtn">Ещё раз</button>
+              <button class="btn btn--wide btn--ghost" type="button" data-action="shop">Гардероб</button>
+              <button class="btn btn--wide btn--ghost" type="button" data-action="menu">В меню</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <section class="shop" id="shop" hidden aria-label="Гардероб">
+        <header class="shop__head">
+          <h2 class="shop__title">Гардероб</h2>
+          <span class="shop__wallet"><b data-shop="wallet">0</b> 🐟</span>
+          <button class="btn btn--small" id="shopClose" type="button">Готово</button>
+        </header>
+        <div class="shop__body">
+          <h3 class="shop__section">Окрас</h3>
+          <div class="shop__grid" data-shop="furs"></div>
+          <h3 class="shop__section">Шляпа</h3>
+          <div class="shop__grid" data-shop="hats"></div>
+          <h3 class="shop__section">Прокачка</h3>
+          <div class="shop__list" data-shop="upgrades"></div>
+          <p class="shop__note">Рыбки из каждого забега попадают в копилку, за победу ещё +15.</p>
+        </div>
+      </section>
+    </main>
+
+    <div class="touch" aria-label="Экранное управление">
+      <button class="touch__btn" data-control="left" type="button" aria-label="Влево">◀</button>
+      <button class="touch__btn touch__btn--slow" data-control="slow" type="button" aria-label="Притормозить">▼</button>
+      <button class="touch__btn touch__btn--jump" data-control="jump" type="button" aria-label="Прыжок">▲</button>
+      <button class="touch__btn" data-control="right" type="button" aria-label="Вправо">▶</button>
+    </div>
+
+    <footer class="footer">
+      Учебная игра на JavaScript и three.js. Сделано с помощью нейросети Claude (Anthropic).
+    </footer>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

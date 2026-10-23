@@ -1,0 +1,641 @@
+/* Mobile first: базовые стили — для телефона, шире — через min-width */
+:root {
+  --bg: #fdf3e7;
+  --ink: #3b2f2f;
+  --muted: #8a7468;
+  --accent: #f08a4b;
+  --accent-dark: #d46f31;
+  --card: #fffaf4;
+  --line: #ead9c6;
+  --radius: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+  gap: 8px;
+}
+
+/* Верхняя панель */
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+.hud__title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.hud__stats {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.hud__stat {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.hud__stat b {
+  color: var(--ink);
+}
+
+.hud__buttons {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+/* Игровое поле */
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #bfe3f2;
+}
+
+#game {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* flex + margin: auto вместо place-items: center — если поле низкое
+   (телефон боком), карточка прокручивается, а не обрезается сверху */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow-y: auto;
+  padding: 16px;
+  background: rgba(59, 47, 47, 0.35);
+}
+
+.overlay[hidden] {
+  display: none;
+}
+
+.overlay__card {
+  width: 100%;
+  max-width: 340px;
+  margin: auto;
+  padding: 20px;
+  border-radius: var(--radius);
+  background: var(--card);
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(59, 47, 47, 0.25);
+}
+
+.overlay__title {
+  margin: 0 0 6px;
+  font-size: 1.4rem;
+}
+
+.overlay__text {
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+
+.overlay__record {
+  margin: -4px 0 14px;
+  font-weight: 700;
+}
+
+.overlay__record.is-new {
+  color: var(--accent-dark);
+}
+
+.overlay__reward {
+  margin: -6px 0 14px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Меню: кнопки столбиком на всю ширину карточки */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn.btn--wide {
+  width: 100%;
+  padding: 12px 20px;
+}
+
+.overlay__title--big {
+  font-size: 1.8rem;
+  letter-spacing: 0.01em;
+}
+
+.menu__stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 16px;
+}
+
+.menu__chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff1e3;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.menu__chip b {
+  color: var(--ink);
+}
+
+.settings {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  text-align: left;
+}
+
+.settings__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font-weight: 700;
+}
+
+.settings__note {
+  display: block;
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.btn.btn--danger {
+  background: #e85d5d;
+}
+
+.btn.btn--danger:hover:not(:disabled) {
+  background: #cf4747;
+}
+
+.btn.btn--ghost {
+  background: transparent;
+  color: var(--accent-dark);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.btn.btn--ghost:hover:not(:disabled) {
+  background: #fff1e3;
+}
+
+/* Гардероб: на телефоне — шторка снизу, кот виден сверху */
+.shop {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 60%;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--card);
+  box-shadow: 0 -8px 24px rgba(59, 47, 47, 0.2);
+}
+
+.shop__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.shop__title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.shop__wallet {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.shop__body {
+  overflow-y: auto;
+  padding: 4px 16px 16px;
+  overscroll-behavior: contain;
+}
+
+.shop__section {
+  margin: 14px 0 8px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.shop__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.shop__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.shop__item:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.shop__item:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.shop__item.is-equipped {
+  border-color: var(--accent);
+  background: #fff1e3;
+}
+
+.shop__swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.shop__icon {
+  font-size: 1.6rem;
+  line-height: 32px;
+}
+
+.shop__name {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.shop__price {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.shop__list {
+  display: grid;
+  gap: 8px;
+}
+
+.shop__upgrade {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.shop__pips {
+  color: var(--accent);
+  letter-spacing: 2px;
+}
+
+.shop__text {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.shop__note {
+  margin: 14px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.goals {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.goals li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+}
+
+.goals__icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.goals__icon--stamp {
+  background: #5aa9e6;
+  outline: 2px dashed #fffaf0;
+  outline-offset: -4px;
+}
+
+.goals__icon--fish {
+  border-radius: 50%;
+  background: #7ec8e3;
+}
+
+.goals__icon--danger {
+  background: repeating-linear-gradient(45deg, #e85d5d 0 4px, #f7f3e8 4px 8px);
+}
+
+.goals__icon--crow {
+  border-radius: 50% 50% 50% 0;
+  background: #23232b;
+}
+
+.hud__hearts {
+  color: #e85d5d;
+  letter-spacing: 1px;
+}
+
+/* Подсказка поверх поля: «Ворона села на трубу!» */
+.toast {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  z-index: 1;
+  max-width: calc(100% - 32px);
+  margin: 0;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(43, 37, 37, 0.9);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: toast-in 0.25s ease-out;
+}
+
+/* Важная подсказка — того же жёлтого цвета, что стрелка над трубой */
+.toast.toast--alert {
+  padding: 12px 22px;
+  background: #ffd23f;
+  color: #3b2f2f;
+  font-size: 1.15rem;
+  box-shadow: 0 0 0 3px #7a4b00, 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+}
+
+/* Выбор уровня */
+.levels {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.level-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  align-items: center;
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.level-card:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.level-card:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.level-card__num {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.level-card:disabled .level-card__num {
+  background: var(--line);
+  color: var(--muted);
+}
+
+.level-card__name {
+  font-weight: 700;
+}
+
+.level-card__info {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.hint {
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  line-height: 1.9;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* Кнопки */
+.btn {
+  padding: 10px 28px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.btn--small {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+}
+
+/* Выключенный звук — кнопка «погашена», но остаётся нажимаемой */
+.btn--sound[aria-pressed="false"] {
+  background: var(--line);
+  color: var(--muted);
+}
+
+/* Экранное управление: на телефоне видно по умолчанию */
+.touch {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 1fr 1fr; /* влево, тормоз, прыжок, вправо */
+  gap: 8px;
+}
+
+.touch__btn.touch__btn--slow {
+  font-size: 1.2rem;
+  color: var(--muted);
+}
+
+.touch__btn {
+  height: 64px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 1.6rem;
+  box-shadow: 0 3px 0 var(--line);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.touch__btn.is-pressed {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--line);
+  background: #fff1e3;
+}
+
+.touch__btn--jump {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 3px 0 var(--accent-dark);
+}
+
+.touch__btn--jump.is-pressed {
+  background: var(--accent-dark);
+}
+
+.footer {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Устройства с мышью: экранные кнопки не нужны */
+@media (hover: hover) and (pointer: fine) {
+  .touch,
+  .hint__touch {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .app {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    gap: 12px;
+  }
+
+  .hud__title {
+    font-size: 1.4rem;
+  }
+
+  .overlay__card {
+    max-width: 400px;
+    padding: 28px;
+  }
+
+  /* На широком экране гардероб — колонка справа, кот слева */
+  .shop {
+    top: 0;
+    left: auto;
+    width: 360px;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: -8px 0 24px rgba(59, 47, 47, 0.2);
+  }
+}
